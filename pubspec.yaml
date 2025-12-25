@@ -1,0 +1,33 @@
+name: dididaren
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod:
+  riverpod_annotation:
+  auto_route:
+  freezed_annotation:
+  json_annotation:
+
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  riverpod_generator:
+  auto_route_generator:
+  build_runner:
+  freezed:
+  json_serializable:
+
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

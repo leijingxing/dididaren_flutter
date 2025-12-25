@@ -9,6 +9,58 @@ part of 'order_providers.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(IsOnline)
+const isOnlineProvider = IsOnlineProvider._();
+
+final class IsOnlineProvider extends $NotifierProvider<IsOnline, bool> {
+  const IsOnlineProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'isOnlineProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$isOnlineHash();
+
+  @$internal
+  @override
+  IsOnline create() => IsOnline();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$isOnlineHash() => r'9bf9890c18bb53660256da2e0785ca1e9b698999';
+
+abstract class _$IsOnline extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
+
 @ProviderFor(OrderList)
 const orderListProvider = OrderListProvider._();
 

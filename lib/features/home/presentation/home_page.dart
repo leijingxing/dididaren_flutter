@@ -5,7 +5,7 @@ import '../../../app_router.dart';
 import '../../auth/application/auth_provider.dart';
 import '../../auth/domain/user_role.dart';
 import 'client_home_view.dart';
-import 'worker_home_view.dart';
+import 'worker/worker_home_view.dart';
 
 @RoutePage()
 class HomePage extends ConsumerWidget {

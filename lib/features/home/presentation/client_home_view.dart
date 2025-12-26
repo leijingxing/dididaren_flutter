@@ -135,6 +135,7 @@ class _ClientHomeViewState extends ConsumerState<ClientHomeView> with TickerProv
 
     ref.read(orderRepositoryProvider).addOrder(newOrder);
 
+    final router = context.router;
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -150,7 +151,17 @@ class _ClientHomeViewState extends ConsumerState<ClientHomeView> with TickerProv
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('好的')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('继续发单'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(context);
+              router.push(ClientOrderDetailRoute(order: newOrder));
+            },
+            child: const Text('查看订单'),
+          ),
         ],
       ),
     );

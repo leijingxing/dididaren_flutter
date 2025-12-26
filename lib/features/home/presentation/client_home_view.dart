@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,7 +7,12 @@ import '../../auth/application/auth_provider.dart';
 import '../../order/data/order_repository.dart';
 import '../../order/domain/order_model.dart';
 import '../../order/domain/order_status.dart';
+import 'widgets/order_form_panel.dart';
+import 'widgets/radar_ripple.dart';
+import 'widgets/searching_view.dart';
 
+/// 客户端主页视图
+/// 包含地图背景、状态展示和订单操作面板
 class ClientHomeView extends ConsumerStatefulWidget {
   const ClientHomeView({super.key});
 
@@ -17,15 +21,17 @@ class ClientHomeView extends ConsumerStatefulWidget {
 }
 
 class _ClientHomeViewState extends ConsumerState<ClientHomeView> with TickerProviderStateMixin {
+  // 业务状态
   int _selectedServiceIndex = 0;
   bool _isSearching = false;
   
-  // 表单状态
+  // 表单数据
   final TextEditingController _descController = TextEditingController();
   double _price = 30.0;
   bool _isAnalyzing = false; // AI 分析中
   bool _hasPhoto = false; // 是否上传了照片
 
+  // 动画控制器
   late AnimationController _rippleController;
 
   @override
@@ -45,6 +51,7 @@ class _ClientHomeViewState extends ConsumerState<ClientHomeView> with TickerProv
     super.dispose();
   }
 
+  /// 根据选择的服务更新默认描述和价格
   void _updateDefaultDesc() {
     switch (_selectedServiceIndex) {
       case 0: _descController.text = '需要搬运几个大箱子到楼上'; _price = 40.0; break;
@@ -60,7 +67,7 @@ class _ClientHomeViewState extends ConsumerState<ClientHomeView> with TickerProv
     });
   }
 
-  // 模拟 AI 识别
+  // 模拟 AI 识别逻辑
   void _analyzeOrder() async {
     if (_descController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('请先输入描述或上传照片')));
@@ -76,7 +83,7 @@ class _ClientHomeViewState extends ConsumerState<ClientHomeView> with TickerProv
 
     setState(() {
       _isAnalyzing = false;
-      // 模拟识别结果
+      // 模拟简单的估价逻辑
       if (_selectedServiceIndex == 0) _price = 88.0; // 搬运贵一点
       if (_descController.text.contains('柜子')) _price += 50; 
       if (_hasPhoto) _price += 10; // 有图加价
@@ -90,10 +97,12 @@ class _ClientHomeViewState extends ConsumerState<ClientHomeView> with TickerProv
     );
   }
 
+  /// 开始呼叫达人
   void _startSearch() {
     setState(() => _isSearching = true);
     _rippleController.repeat();
 
+    // 模拟匹配过程
     Future.delayed(const Duration(seconds: 3), () {
       if (!mounted || !_isSearching) return;
       _createOrder();
@@ -108,6 +117,7 @@ class _ClientHomeViewState extends ConsumerState<ClientHomeView> with TickerProv
     setState(() => _isSearching = false);
   }
 
+  /// 创建订单
   void _createOrder() {
     String title = ['搬运服务', '代买服务', '临时杂活'][_selectedServiceIndex];
 
@@ -130,7 +140,15 @@ class _ClientHomeViewState extends ConsumerState<ClientHomeView> with TickerProv
       builder: (_) => AlertDialog(
         icon: const Icon(Icons.check_circle, color: Colors.green, size: 48),
         title: const Text('订单已发布'),
-        content: Text('价格: ¥${_price.toStringAsFixed(0)}\n已通知附近的达人，请耐心等待。'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('价格: ¥${_price.toStringAsFixed(0)}'),
+            const SizedBox(height: 8),
+            const Text('已通知附近的达人，请耐心等待。'),
+          ],
+        ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('好的')),
         ],
@@ -142,7 +160,7 @@ class _ClientHomeViewState extends ConsumerState<ClientHomeView> with TickerProv
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // 1. 地图层
+        // 1. 地图层 (背景)
         Container(
           color: Colors.grey[200],
           child: Stack(
@@ -159,14 +177,14 @@ class _ClientHomeViewState extends ConsumerState<ClientHomeView> with TickerProv
               ),
               const Center(child: Icon(Icons.map, size: 120, color: Colors.black12)),
               
-              if (_isSearching) _RadarRipple(controller: _rippleController),
+              if (_isSearching) RadarRipple(controller: _rippleController),
                 
               const Center(child: Icon(Icons.person_pin_circle, size: 50, color: Colors.black87)),
             ],
           ),
         ),
 
-        // 2. 顶部登出
+        // 2. 顶部登出按钮
         Positioned(
           top: MediaQuery.of(context).padding.top + 10,
           right: 16,
@@ -202,308 +220,25 @@ class _ClientHomeViewState extends ConsumerState<ClientHomeView> with TickerProv
               child: AnimatedSize(
                 duration: const Duration(milliseconds: 300),
                 alignment: Alignment.topCenter,
-                child: _isSearching ? _buildSearchingView() : _buildOrderForm(context),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSearchingView() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Text(
-          '正在呼叫附近的达人...',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'AI 已为您匹配 5 位最合适的达人',
-          style: TextStyle(color: Colors.grey),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 24),
-        LinearProgressIndicator(
-          backgroundColor: Colors.grey[200],
-          valueColor: AlwaysStoppedAnimation(Theme.of(context).colorScheme.primary),
-        ),
-        const SizedBox(height: 24),
-        OutlinedButton(
-          onPressed: _stopSearch,
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-            side: const BorderSide(color: Colors.grey),
-          ),
-          child: const Text('取消呼叫', style: TextStyle(color: Colors.black87)),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildOrderForm(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // 服务类型选择
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              _ServiceTab(
-                icon: Icons.inventory_2_rounded,
-                label: '帮我搬',
-                isSelected: _selectedServiceIndex == 0,
-                onTap: () => _onServiceSelected(0),
-              ),
-              const SizedBox(width: 12),
-              _ServiceTab(
-                icon: Icons.shopping_cart_rounded,
-                label: '帮我买',
-                isSelected: _selectedServiceIndex == 1,
-                onTap: () => _onServiceSelected(1),
-              ),
-              const SizedBox(width: 12),
-              _ServiceTab(
-                icon: Icons.cleaning_services_rounded,
-                label: '临时工',
-                isSelected: _selectedServiceIndex == 2,
-                onTap: () => _onServiceSelected(2),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 24),
-
-        // 描述输入框 + 拍照按钮
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[200]!),
-          ),
-          child: Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _descController,
-                      maxLines: 3,
-                      minLines: 2,
-                      decoration: const InputDecoration.collapsed(
-                        hintText: '描述您的需求，例如：搬运两个大箱子到5楼...',
-                        hintStyle: TextStyle(color: Colors.grey),
-                      ),
+                child: _isSearching 
+                  ? SearchingView(onStopSearch: _stopSearch)
+                  : OrderFormPanel(
+                      selectedServiceIndex: _selectedServiceIndex,
+                      descController: _descController,
+                      price: _price,
+                      isAnalyzing: _isAnalyzing,
+                      hasPhoto: _hasPhoto,
+                      onServiceSelected: _onServiceSelected,
+                      onAnalyze: _analyzeOrder,
+                      onPriceChanged: (newPrice) => setState(() => _price = newPrice),
+                      onPhotoToggle: () => setState(() => _hasPhoto = !_hasPhoto),
+                      onSubmit: _startSearch,
                     ),
-                  ),
-                  // 拍照按钮
-                  InkWell(
-                    onTap: () {
-                      setState(() => _hasPhoto = !_hasPhoto);
-                    },
-                    child: Container(
-                      width: 60,
-                      height: 60,
-                      margin: const EdgeInsets.only(left: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                        image: _hasPhoto 
-                          ? const DecorationImage(image: NetworkImage('https://via.placeholder.com/150'), fit: BoxFit.cover)
-                          : null,
-                      ),
-                      child: _hasPhoto 
-                          ? const Icon(Icons.check_circle, color: Colors.green)
-                          : const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.camera_alt, color: Colors.grey, size: 24),
-                                Text('拍照', style: TextStyle(fontSize: 10, color: Colors.grey)),
-                              ],
-                            ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        
-        const SizedBox(height: 16),
-
-        // AI 估价区域
-        Row(
-          children: [
-            // AI 按钮
-            InkWell(
-              onTap: _isAnalyzing ? null : _analyzeOrder,
-              borderRadius: BorderRadius.circular(20),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [Colors.purple.shade100, Colors.blue.shade100]),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.purple.shade200),
-                ),
-                child: Row(
-                  children: [
-                    if (_isAnalyzing)
-                       const SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2))
-                    else
-                       const Icon(Icons.auto_awesome, size: 16, color: Colors.purple),
-                    const SizedBox(width: 4),
-                    Text(_isAnalyzing ? '分析中...' : 'AI 估价', style: const TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
-                  ],
-                ),
               ),
             ),
-            const Spacer(),
-            // 价格显示与调节
-            IconButton(
-              icon: const Icon(Icons.remove_circle_outline),
-              onPressed: () => setState(() => _price = math.max(10, _price - 5)),
-            ),
-            Text(
-              '¥${_price.toStringAsFixed(0)}',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.red),
-            ),
-            IconButton(
-              icon: const Icon(Icons.add_circle_outline),
-              onPressed: () => setState(() => _price += 5),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 24),
-
-        // 发布按钮
-        ElevatedButton(
-          onPressed: _startSearch,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black87,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            elevation: 0,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('发布需求', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              SizedBox(width: 8),
-              Icon(Icons.arrow_forward),
-            ],
           ),
         ),
       ],
     );
-  }
-}
-
-// 简化的服务选项卡
-class _ServiceTab extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _ServiceTab({
-    required this.icon,
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.black87 : Colors.grey[100],
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, size: 18, color: isSelected ? Colors.white : Colors.grey[600]),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.grey[600],
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// 雷达波纹动画组件
-class _RadarRipple extends StatelessWidget {
-  final AnimationController controller;
-
-  const _RadarRipple({required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, child) {
-        return CustomPaint(
-          painter: _RipplePainter(controller.value),
-          size: const Size(400, 400),
-        );
-      },
-    );
-  }
-}
-
-class _RipplePainter extends CustomPainter {
-  final double progress;
-
-  _RipplePainter(this.progress);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final maxRadius = size.width / 2;
-
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-
-    for (int i = 0; i < 3; i++) {
-      final double offset = i * 0.3;
-      final double currentProgress = (progress + offset) % 1.0;
-      final double radius = maxRadius * currentProgress;
-      final double opacity = 1.0 - currentProgress;
-
-      paint.color = Colors.deepOrange.withOpacity(opacity * 0.5);
-      paint.strokeWidth = 2 + (4 * currentProgress);
-
-      canvas.drawCircle(center, radius, paint);
-      
-      final fillPaint = Paint()
-        ..style = PaintingStyle.fill
-        ..color = Colors.deepOrange.withOpacity(opacity * 0.1);
-      canvas.drawCircle(center, radius, fillPaint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _RipplePainter oldDelegate) {
-    return oldDelegate.progress != progress;
   }
 }

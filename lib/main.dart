@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     final appRouter = AppRouter();
 
     return MaterialApp.router(
-      title: 'Dididaren',
+      title: '滴滴打人',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,

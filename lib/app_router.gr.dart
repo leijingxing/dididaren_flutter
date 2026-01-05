@@ -78,6 +78,70 @@ class ActiveOrderDetailRouteArgs {
 }
 
 /// generated route for
+/// [ChatDetailPage]
+class ChatDetailRoute extends PageRouteInfo<ChatDetailRouteArgs> {
+  ChatDetailRoute({
+    Key? key,
+    required String sessionId,
+    required String userName,
+    List<PageRouteInfo>? children,
+  }) : super(
+         ChatDetailRoute.name,
+         args: ChatDetailRouteArgs(
+           key: key,
+           sessionId: sessionId,
+           userName: userName,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'ChatDetailRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<ChatDetailRouteArgs>();
+      return ChatDetailPage(
+        key: args.key,
+        sessionId: args.sessionId,
+        userName: args.userName,
+      );
+    },
+  );
+}
+
+class ChatDetailRouteArgs {
+  const ChatDetailRouteArgs({
+    this.key,
+    required this.sessionId,
+    required this.userName,
+  });
+
+  final Key? key;
+
+  final String sessionId;
+
+  final String userName;
+
+  @override
+  String toString() {
+    return 'ChatDetailRouteArgs{key: $key, sessionId: $sessionId, userName: $userName}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ChatDetailRouteArgs) return false;
+    return key == other.key &&
+        sessionId == other.sessionId &&
+        userName == other.userName;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ sessionId.hashCode ^ userName.hashCode;
+}
+
+/// generated route for
 /// [ClientOrderDetailPage]
 class ClientOrderDetailRoute extends PageRouteInfo<ClientOrderDetailRouteArgs> {
   ClientOrderDetailRoute({
@@ -205,6 +269,22 @@ class HomeRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [MessageListPage]
+class MessageListRoute extends PageRouteInfo<void> {
+  const MessageListRoute({List<PageRouteInfo>? children})
+    : super(MessageListRoute.name, initialChildren: children);
+
+  static const String name = 'MessageListRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const MessageListPage();
+    },
+  );
+}
+
+/// generated route for
 /// [OrderDetailPage]
 class OrderDetailRoute extends PageRouteInfo<OrderDetailRouteArgs> {
   OrderDetailRoute({
@@ -263,6 +343,22 @@ class RoleSelectionRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const RoleSelectionPage();
+    },
+  );
+}
+
+/// generated route for
+/// [SettingsPage]
+class SettingsRoute extends PageRouteInfo<void> {
+  const SettingsRoute({List<PageRouteInfo>? children})
+    : super(SettingsRoute.name, initialChildren: children);
+
+  static const String name = 'SettingsRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const SettingsPage();
     },
   );
 }

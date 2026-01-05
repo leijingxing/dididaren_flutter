@@ -3,8 +3,10 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'features/auth/presentation/role_selection_page.dart';
 import 'features/auth/presentation/sign_in_page.dart';
-import 'features/chat/presentation/chat_detail_page.dart'; // Import
-import 'features/chat/presentation/message_list_page.dart'; // Import
+import 'features/chat/presentation/call/video_call_page.dart'; // Import
+import 'features/chat/presentation/call/voice_call_page.dart'; // Import
+import 'features/chat/presentation/chat_detail_page.dart';
+import 'features/chat/presentation/message_list_page.dart';
 import 'features/deeplink/domain/deeplink_parser.dart';
 import 'features/deeplink/presentation/deeplink_open_page.dart';
 import 'features/home/presentation/home_page.dart';
@@ -34,8 +36,10 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: RoleSelectionRoute.page),
         AutoRoute(page: HomeRoute.page, path: '/home'),
         AutoRoute(page: SettingsRoute.page, path: '/settings'),
-        AutoRoute(page: MessageListRoute.page, path: '/messages'), // Add
-        AutoRoute(page: ChatDetailRoute.page, path: '/chat'), // Add
+        AutoRoute(page: MessageListRoute.page, path: '/messages'),
+        AutoRoute(page: ChatDetailRoute.page, path: '/chat'),
+        AutoRoute(page: VoiceCallRoute.page, path: '/call/voice'), // Add
+        AutoRoute(page: VideoCallRoute.page, path: '/call/video'), // Add
         AutoRoute(page: DeepLinkOpenRoute.page, path: '/open/page'),
         AutoRoute(page: OrderDetailRoute.page, path: '/order-detail'),
         AutoRoute(page: ActiveOrderDetailRoute.page, path: '/active-order-detail'),

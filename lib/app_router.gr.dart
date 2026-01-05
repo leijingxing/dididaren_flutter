@@ -378,3 +378,131 @@ class SignInRoute extends PageRouteInfo<void> {
     },
   );
 }
+
+/// generated route for
+/// [VideoCallPage]
+class VideoCallRoute extends PageRouteInfo<VideoCallRouteArgs> {
+  VideoCallRoute({
+    Key? key,
+    required String userName,
+    required String avatarUrl,
+    List<PageRouteInfo>? children,
+  }) : super(
+         VideoCallRoute.name,
+         args: VideoCallRouteArgs(
+           key: key,
+           userName: userName,
+           avatarUrl: avatarUrl,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'VideoCallRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<VideoCallRouteArgs>();
+      return VideoCallPage(
+        key: args.key,
+        userName: args.userName,
+        avatarUrl: args.avatarUrl,
+      );
+    },
+  );
+}
+
+class VideoCallRouteArgs {
+  const VideoCallRouteArgs({
+    this.key,
+    required this.userName,
+    required this.avatarUrl,
+  });
+
+  final Key? key;
+
+  final String userName;
+
+  final String avatarUrl;
+
+  @override
+  String toString() {
+    return 'VideoCallRouteArgs{key: $key, userName: $userName, avatarUrl: $avatarUrl}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! VideoCallRouteArgs) return false;
+    return key == other.key &&
+        userName == other.userName &&
+        avatarUrl == other.avatarUrl;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ userName.hashCode ^ avatarUrl.hashCode;
+}
+
+/// generated route for
+/// [VoiceCallPage]
+class VoiceCallRoute extends PageRouteInfo<VoiceCallRouteArgs> {
+  VoiceCallRoute({
+    Key? key,
+    required String userName,
+    required String avatarUrl,
+    List<PageRouteInfo>? children,
+  }) : super(
+         VoiceCallRoute.name,
+         args: VoiceCallRouteArgs(
+           key: key,
+           userName: userName,
+           avatarUrl: avatarUrl,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'VoiceCallRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<VoiceCallRouteArgs>();
+      return VoiceCallPage(
+        key: args.key,
+        userName: args.userName,
+        avatarUrl: args.avatarUrl,
+      );
+    },
+  );
+}
+
+class VoiceCallRouteArgs {
+  const VoiceCallRouteArgs({
+    this.key,
+    required this.userName,
+    required this.avatarUrl,
+  });
+
+  final Key? key;
+
+  final String userName;
+
+  final String avatarUrl;
+
+  @override
+  String toString() {
+    return 'VoiceCallRouteArgs{key: $key, userName: $userName, avatarUrl: $avatarUrl}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! VoiceCallRouteArgs) return false;
+    return key == other.key &&
+        userName == other.userName &&
+        avatarUrl == other.avatarUrl;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ userName.hashCode ^ avatarUrl.hashCode;
+}

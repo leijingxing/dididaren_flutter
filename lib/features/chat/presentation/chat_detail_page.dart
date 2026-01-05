@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../app_router.dart';
 import '../application/chat_provider.dart';
 import '../domain/message_model.dart';
 
@@ -22,8 +25,9 @@ class ChatDetailPage extends ConsumerStatefulWidget {
 class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
   final _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final ImagePicker _picker = ImagePicker();
   bool _isVoiceMode = false;
-  bool _isRecording = false; // Mock recording state
+  bool _isRecording = false;
 
   @override
   void dispose() {
@@ -54,15 +58,25 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
     Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
   }
 
-  void _sendImage() {
-    // Mock Image Send
-    ref.read(chatMessagesProvider(widget.sessionId).notifier).sendMessage(
-          'https://via.placeholder.com/150', // Mock URL
-          MessageType.image,
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? image = await _picker.pickImage(source: source);
+      if (image != null) {
+        ref.read(chatMessagesProvider(widget.sessionId).notifier).sendMessage(
+              image.path,
+              MessageType.image,
+            );
+        Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('选择图片失败: $e')),
         );
-    Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
+      }
+    }
   }
-  
+
   void _sendMockVoice() {
       // Mock Voice Send
       ref.read(chatMessagesProvider(widget.sessionId).notifier).sendMessage(
@@ -73,6 +87,20 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
       Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
   }
 
+  void _startVoiceCall() {
+    context.router.push(VoiceCallRoute(
+      userName: widget.userName,
+      avatarUrl: 'assets/avatars/user_placeholder.png', // Mock avatar
+    ));
+  }
+
+  void _startVideoCall() {
+    context.router.push(VideoCallRoute(
+      userName: widget.userName,
+      avatarUrl: 'assets/avatars/user_placeholder.png', // Mock avatar
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final messages = ref.watch(chatMessagesProvider(widget.sessionId));
@@ -80,14 +108,27 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.surfaceContainerLowest, // Slightly grey bg for chat
+      backgroundColor: colorScheme.surfaceContainerLowest,
       appBar: AppBar(
         title: Text(widget.userName),
         centerTitle: true,
         backgroundColor: colorScheme.surface,
         elevation: 0,
         actions: [
-            IconButton(icon: const Icon(Icons.more_horiz), onPressed: (){}),
+          IconButton(
+            icon: const Icon(Icons.call_rounded),
+            onPressed: _startVoiceCall,
+            tooltip: '语音通话',
+          ),
+          IconButton(
+            icon: const Icon(Icons.videocam_rounded),
+            onPressed: _startVideoCall,
+            tooltip: '视频通话',
+          ),
+          IconButton(
+            icon: const Icon(Icons.more_horiz),
+            onPressed: () {},
+          ),
         ],
       ),
       body: Column(
@@ -180,17 +221,54 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
                   IconButton(
                     icon: Icon(Icons.add_circle_outline_rounded, size: 28, color: colorScheme.onSurfaceVariant),
                     onPressed: () {
-                         showModalBottomSheet(context: context, builder: (ctx) {
+                         showModalBottomSheet(
+                             context: context,
+                             backgroundColor: Colors.transparent, 
+                             builder: (ctx) {
                              return Container(
-                                 height: 160,
+                                 height: 200, // Increased height
+                                 margin: const EdgeInsets.all(16),
+                                 decoration: BoxDecoration(
+                                   color: colorScheme.surface,
+                                   borderRadius: BorderRadius.circular(24),
+                                 ),
                                  padding: const EdgeInsets.all(24),
-                                 child: Row(
-                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                     children: [
-                                         _ActionButton(icon: Icons.image, label: '图片', onTap: (){ Navigator.pop(ctx); _sendImage(); }),
-                                         _ActionButton(icon: Icons.camera_alt, label: '拍摄', onTap: (){Navigator.pop(ctx);}),
-                                         _ActionButton(icon: Icons.location_on, label: '位置', onTap: (){Navigator.pop(ctx);}),
-                                     ],
+                                 child: Column(
+                                   children: [
+                                     Row(
+                                         mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                         children: [
+                                             _ActionButton(
+                                               icon: Icons.image_rounded, 
+                                               label: '相册', 
+                                               color: Colors.blue[100]!,
+                                               iconColor: Colors.blue[800]!,
+                                               onTap: (){ Navigator.pop(ctx); _pickImage(ImageSource.gallery); }
+                                             ),
+                                             _ActionButton(
+                                               icon: Icons.camera_alt_rounded, 
+                                               label: '拍摄', 
+                                               color: Colors.orange[100]!,
+                                               iconColor: Colors.orange[800]!,
+                                               onTap: (){ Navigator.pop(ctx); _pickImage(ImageSource.camera); }
+                                             ),
+                                             _ActionButton(
+                                               icon: Icons.videocam_rounded, 
+                                               label: '视频通话', 
+                                               color: Colors.purple[100]!,
+                                               iconColor: Colors.purple[800]!,
+                                               onTap: (){ Navigator.pop(ctx); _startVideoCall(); }
+                                             ),
+                                             _ActionButton(
+                                               icon: Icons.phone_rounded, 
+                                               label: '语音通话', 
+                                               color: Colors.green[100]!,
+                                               iconColor: Colors.green[800]!,
+                                               onTap: (){ Navigator.pop(ctx); _startVoiceCall(); }
+                                             ),
+                                         ],
+                                     ),
+                                   ],
                                  ),
                              );
                          });
@@ -216,8 +294,16 @@ class _ActionButton extends StatelessWidget {
     final IconData icon;
     final String label;
     final VoidCallback onTap;
+    final Color color;
+    final Color iconColor;
     
-    const _ActionButton({required this.icon, required this.label, required this.onTap});
+    const _ActionButton({
+      required this.icon, 
+      required this.label, 
+      required this.onTap,
+      required this.color,
+      required this.iconColor,
+    });
     
     @override
     Widget build(BuildContext context) {
@@ -227,15 +313,15 @@ class _ActionButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                     Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(16),
+                            color: color,
+                            borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Icon(icon, size: 32, color: Colors.black87),
+                        child: Icon(icon, size: 28, color: iconColor),
                     ),
                     const SizedBox(height: 8),
-                    Text(label, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                    Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
                 ],
             ),
         );
@@ -294,12 +380,7 @@ class _MessageBubble extends StatelessWidget {
       case MessageType.image:
         return ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Container(
-                height: 150,
-                width: 150,
-                color: Colors.grey[300],
-                child: const Icon(Icons.image, size: 50, color: Colors.white),
-            ),
+            child: _buildImage(message.content),
         );
       case MessageType.audio:
          return Row(
@@ -311,5 +392,37 @@ class _MessageBubble extends StatelessWidget {
              ],
          );
     }
+  }
+
+  Widget _buildImage(String path) {
+    if (path.startsWith('http')) {
+      return Image.network(
+        path,
+        height: 200,
+        width: 200,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
+      );
+    } else if (File(path).existsSync()) {
+      return Image.file(
+        File(path),
+        height: 200,
+        width: 200,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
+      );
+    } else {
+      // Mock/Asset or Broken path
+      return _buildPlaceholder();
+    }
+  }
+
+  Widget _buildPlaceholder() {
+    return Container(
+      height: 200,
+      width: 200,
+      color: Colors.grey[300],
+      child: const Icon(Icons.image_not_supported, size: 50, color: Colors.white),
+    );
   }
 }

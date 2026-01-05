@@ -207,7 +207,7 @@ class _ClientHomeViewState extends ConsumerState<ClientHomeView> with TickerProv
               icon: const Icon(Icons.logout, color: Colors.black87),
               onPressed: () {
                 ref.read(authProvider.notifier).logout();
-                context.router.replace(const LoginRoute());
+                context.router.replace(const SignInRoute());
               },
             ),
           ),

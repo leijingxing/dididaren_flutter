@@ -32,7 +32,7 @@ class StatusHeader extends ConsumerWidget {
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)),
         boxShadow: [
           BoxShadow(
-            color: isOnline ? Colors.blue.withOpacity(0.3) : Colors.black.withOpacity(0.05),
+            color: isOnline ? Colors.blue.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -49,7 +49,7 @@ class StatusHeader extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                 decoration: BoxDecoration(
-                  color: isOnline ? Colors.black.withOpacity(0.2) : Colors.white,
+                  color: isOnline ? Colors.black.withValues(alpha: 0.2) : Colors.white,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: Row(
@@ -84,11 +84,11 @@ class StatusHeader extends ConsumerWidget {
               IconButton(
                 icon: Icon(
                   Icons.power_settings_new_rounded,
-                  color: isOnline ? Colors.white.withOpacity(0.8) : Colors.grey.shade600,
+                  color: isOnline ? Colors.white.withValues(alpha: 0.8) : Colors.grey.shade600,
                 ),
                 onPressed: () {
                   ref.read(authProvider.notifier).logout();
-                  context.router.replace(const LoginRoute());
+                  context.router.replace(const SignInRoute());
                 },
               ),
             ],
@@ -123,7 +123,7 @@ class StatusHeader extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: isOnline ? Colors.white.withOpacity(0.2) : Colors.orange.shade50,
+                  color: isOnline ? Colors.white.withValues(alpha: 0.2) : Colors.orange.shade50,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(

@@ -17,7 +17,7 @@ class HomePage extends ConsumerWidget {
 
     if (userRole == null) {
       // 异常情况或未登录，返回登录页
-      Future.microtask(() => context.router.replace(const LoginRoute()));
+      Future.microtask(() => context.router.replace(const SignInRoute()));
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 

@@ -1,7 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'features/auth/presentation/login_page.dart';
+import 'features/auth/presentation/role_selection_page.dart';
+import 'features/auth/presentation/sign_in_page.dart';
 import 'features/deeplink/domain/deeplink_parser.dart';
 import 'features/deeplink/presentation/deeplink_open_page.dart';
 import 'features/home/presentation/home_page.dart';
@@ -26,7 +27,8 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
-        AutoRoute(page: LoginRoute.page, initial: true),
+        AutoRoute(page: SignInRoute.page, initial: true),
+        AutoRoute(page: RoleSelectionRoute.page),
         AutoRoute(page: HomeRoute.page, path: '/home'),
         AutoRoute(page: DeepLinkOpenRoute.page, path: '/open/page'),
         AutoRoute(page: OrderDetailRoute.page, path: '/order-detail'),

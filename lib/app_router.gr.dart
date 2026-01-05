@@ -125,6 +125,70 @@ class ClientOrderDetailRouteArgs {
 }
 
 /// generated route for
+/// [DeepLinkOpenPage]
+class DeepLinkOpenRoute extends PageRouteInfo<DeepLinkOpenRouteArgs> {
+  DeepLinkOpenRoute({
+    Key? key,
+    required String token,
+    required Uri sourceUri,
+    List<PageRouteInfo>? children,
+  }) : super(
+         DeepLinkOpenRoute.name,
+         args: DeepLinkOpenRouteArgs(
+           key: key,
+           token: token,
+           sourceUri: sourceUri,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'DeepLinkOpenRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<DeepLinkOpenRouteArgs>();
+      return DeepLinkOpenPage(
+        key: args.key,
+        token: args.token,
+        sourceUri: args.sourceUri,
+      );
+    },
+  );
+}
+
+class DeepLinkOpenRouteArgs {
+  const DeepLinkOpenRouteArgs({
+    this.key,
+    required this.token,
+    required this.sourceUri,
+  });
+
+  final Key? key;
+
+  final String token;
+
+  final Uri sourceUri;
+
+  @override
+  String toString() {
+    return 'DeepLinkOpenRouteArgs{key: $key, token: $token, sourceUri: $sourceUri}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! DeepLinkOpenRouteArgs) return false;
+    return key == other.key &&
+        token == other.token &&
+        sourceUri == other.sourceUri;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ token.hashCode ^ sourceUri.hashCode;
+}
+
+/// generated route for
 /// [HomePage]
 class HomeRoute extends PageRouteInfo<void> {
   const HomeRoute({List<PageRouteInfo>? children})

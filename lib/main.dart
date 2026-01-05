@@ -17,10 +17,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Dididaren',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),        
         useMaterial3: true,
       ),
-      routerConfig: appRouter.config(),
+      routerConfig: appRouter.config(
+        deepLinkBuilder: appRouter.deepLinkBuilder,
+      ),
     );
   }
 }
